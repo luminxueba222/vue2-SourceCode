@@ -25,7 +25,7 @@
 export default {
   methods: {
     changeWidth() {
-      alert(1);
+      this.$store.commit("changeCollapse");
     }
   }
 };
@@ -34,15 +34,15 @@ export default {
 .header {
   display: flex;
   flex-direction: row;
-  height: 65px;
+  height: 70px;
 }
 .l {
-  width: 300px;
   background: #409eff;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  min-width: 245px;
 }
 .r {
   width: 100%;
