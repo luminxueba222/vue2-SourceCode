@@ -1,8 +1,185 @@
 <template>
-  <div>Dashboard{{this.$store.state.collapse}}</div>
+  <div>
+    <el-row :gutter="12">
+      <el-col :span="8">
+        <el-card shadow="hover">
+          <div class="cardHeader">
+            <div class="imgbox">
+              <img src="../../assets/img/logo.png" alt />
+            </div>
+            <div class="user">
+              <div>admin</div>
+              <div class="role">超级管理员</div>
+            </div>
+          </div>
+        </el-card>
+        <div style="height:12px"></div>
+        <el-card shadow="hover">
+          <div class="cardHeader">
+            <div class="imgbox">
+              <img src="../../assets/img/logo.png" alt />
+            </div>
+            <div class="user">
+              <div>admin</div>
+              <div class="role">超级管理员</div>
+            </div>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :span="16">
+        <div class="webInfo">
+          <div class="info">
+            <div class="iconBox">
+              <i class="el-icon-user"></i>
+            </div>
+            <div>
+              <div class="user">
+                <div>admin</div>
+                <div class="role">超级管理员</div>
+              </div>
+            </div>
+          </div>
+          <div class="info">
+            <div class="iconBox">
+              <i class="el-icon-user"></i>
+            </div>
+            <div>
+              <div class="user">
+                <div>admin</div>
+                <div class="role">超级管理员</div>
+              </div>
+            </div>
+          </div>
+          <div class="info">
+            <div class="iconBox">
+              <i class="el-icon-user"></i>
+            </div>
+            <div>
+              <div class="user">
+                <div>admin</div>
+                <div class="role">超级管理员</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <el-card shadow="hover">
+          <div slot="header" class="clearfix">
+            <span>卡片名称</span>
+            <el-button style="float: right; padding: 3px 0" type="text">操作按钮</el-button>
+          </div>
+          <div>
+            <ul style="list-style:none">
+              <li>
+                <el-checkbox
+                  v-model="item.status"
+                  v-for="(item,index) in checkList"
+                  :key="index"
+                  style="display:block"
+                >{{item.title}}</el-checkbox>
+              </li>
+            </ul>
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 <script>
-export default {};
+export default {
+  data() {
+    return {
+      checkList: [
+        {
+          title: "今天要修复100个bug",
+          status: false
+        },
+        {
+          title: "今天要修复100个bug",
+          status: false
+        },
+        {
+          title: "今天要写100行代码加几个bug吧",
+          status: false
+        },
+        {
+          title: "今天要修复100个bug",
+          status: false
+        },
+        {
+          title: "今天要修复100个bug",
+          status: false
+        },
+        {
+          title: "今天要写100行代码加几个bug吧",
+          status: false
+        }
+      ]
+    };
+  }
+};
 </script>
 <style scoped>
+.cardHeader {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  min-width: 200px;
+}
+.imgbox {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: #399;
+  min-width: 100px;
+}
+.imgbox img {
+  width: 100%;
+  border-radius: 50%;
+}
+.user {
+  margin: 15px 0 0 20px;
+}
+
+.user:nth-child(2) {
+  font-size: 25px;
+}
+.role {
+  font-size: 15px;
+}
+.webInfo {
+  display: flex;
+  flex-direction: row;
+}
+.info {
+  display: flex;
+  flex-direction: row;
+  flex-grow: 1;
+  background: #fff;
+  margin-left: 20px;
+}
+.iconBox {
+  padding: 30px;
+  background: blue;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.iconBox i {
+  font-size: 40px;
+}
+.webInfo .user {
+  display: flex;
+  /* padding: 20px; */
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* margin: 0 40px 0 0; */
+
+  background: #fff;
+}
+.webInfo {
+  /* background: #fff; */
+  margin-bottom: 12px;
+  display: flex;
+}
 </style>

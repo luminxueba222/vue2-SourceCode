@@ -50,13 +50,18 @@ export default {
       );
     },
     closeTag(path) {
-      this.tagsList = this.tagsList.filter(e => e.path !== path);
-      let len = this.tagsList.length - 1;
-      let last = this.tagsList[len];
-      if (len >= 0) {
-        this.$router.push(`${last.path}`);
+      // this.tagsList = this.tagsList.filter(e => e.path !== path);
+      if (path == this.$route.fullPath) {
+        if (this.tagsList.length > 1) {
+          this.tagsList = this.tagsList.filter(e => e.path !== path);
+          let frist = this.tagsList[0];
+          this.$router.push(`${frist.path}`);
+        } else {
+          this.tagsList = [];
+          this.$router.push(`/`);
+        }
       } else {
-        this.$router.push(`/`);
+        this.tagsList = this.tagsList.filter(e => e.path !== path);
       }
     },
     All() {
