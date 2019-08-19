@@ -9,6 +9,9 @@ import 'element-ui/lib/theme-chalk/index.css'
 import echarts from 'echarts'
 import 'echarts-gl';
 import "echarts/lib/component/legend"
+import ECharts from 'vue-echarts'
+import 'echarts/lib/chart/line'
+Vue.component('chart', ECharts)
 Vue.prototype.echarts = echarts
 Vue.prototype.axios = Axios
 Vue.use(Element, {
