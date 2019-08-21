@@ -8,6 +8,8 @@
         </span>
       </li>
     </ul>
+    <!-- {{this.$store.state.tagsList}} -->
+    {{tagsList}}
     <div class="dropdownBox">
       <el-dropdown @command="handleCommand">
         <el-button size="mini" type="primary">
@@ -63,6 +65,9 @@ export default {
       } else {
         this.tagsList = this.tagsList.filter(e => e.path !== path);
       }
+      console.log(this.tagsList);
+      
+       this.$store.commit('setTagsList',this.tagsList)
     },
     All() {
       this.$router.push("/");
@@ -79,14 +84,19 @@ export default {
         if (this.tagsList.length >= 7) {
           this.tagsList.shift();
         }
-        console.log(route, 111);
-
+        // console.log(route, 111);
+  //  console.log(route,'route');
+   
         this.tagsList.push({
           title: route.meta.title,
           path: route.fullPath,
-          name: route.matched[1].components.default.name
+          name: route.fullPath.slice(1)
         });
       }
+      console.log(this.tagsList,"tagList");
+      this.$store.commit('setTagsList',this.tagsList)
+      // console.log(this,"this");
+      
     }
   },
   computed: {

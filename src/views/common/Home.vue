@@ -1,12 +1,13 @@
 <template>
   <div>
+     {{tagsListArr}}
     <x-header></x-header>
     <x-sidebar></x-sidebar>
     <div class="content-box" :class="{collapse:this.$store.state.collapse}">
       <x-tags></x-tags>
       <div class="content">
         <transition name="move" mode="out-in">
-          <keep-alive :include="tagsList">
+          <keep-alive :include="tagsListArr">
             <router-view></router-view>
           </keep-alive>
         </transition>
@@ -26,12 +27,28 @@ export default {
   },
   data() {
     return {
-      tagsList: []
       // collapse:
+      tagsListArr:[]
     };
   },
   created(){
-    
+   
+  },
+  computed:{
+     tagsList(){
+      return  this.$store.state.tagsList
+    }
+  },
+  watch:{
+    tagsList:function(old){
+       old.forEach(e=>{
+         if(!this.tagsListArr.includes(e.name)){
+            this.tagsListArr.push(e.name)
+         }
+        
+       })
+      
+    }
   }
 };
 </script>

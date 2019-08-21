@@ -5,12 +5,16 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    collapse: false
+    collapse: false,
+    tagsList:[]
 
   },
   mutations: {
     changeCollapse(state) {
       state.collapse = !state.collapse
+    },
+    setTagsList(state,data) {
+      state.tagsList = data
     }
   },
   actions: {
