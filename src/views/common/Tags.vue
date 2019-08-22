@@ -8,8 +8,7 @@
         </span>
       </li>
     </ul>
-    <!-- {{this.$store.state.tagsList}} -->
-    {{tagsList}}
+    {{tagsList.length}}
     <div class="dropdownBox">
       <el-dropdown @command="handleCommand">
         <el-button size="mini" type="primary">
@@ -46,7 +45,7 @@ export default {
       return path === this.$route.fullPath;
     },
     Other() {
-      console.log(this.$route.fullPath);
+      // console.log(this.$route.fullPath);
       this.tagsList = this.tagsList.filter(
         e => e.path === this.$route.fullPath
       );
@@ -65,7 +64,7 @@ export default {
       } else {
         this.tagsList = this.tagsList.filter(e => e.path !== path);
       }
-      console.log(this.tagsList);
+      // console.log(this.tagsList);
       
        this.$store.commit('setTagsList',this.tagsList)
     },
@@ -93,7 +92,7 @@ export default {
           name: route.fullPath.slice(1)
         });
       }
-      console.log(this.tagsList,"tagList");
+      // console.log(this.tagsList,"tagList");
       this.$store.commit('setTagsList',this.tagsList)
       // console.log(this,"this");
       

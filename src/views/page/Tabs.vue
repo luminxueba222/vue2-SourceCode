@@ -23,7 +23,7 @@ export default {
   },
   mounted(){
     let ec = this.echarts.init(document.getElementById("ec"))
-    console.log(ec,222);
+    // console.log(ec,222);
     ec.setOption(this.option)
   }
   

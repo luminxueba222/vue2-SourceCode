@@ -121,7 +121,7 @@ export default {
   methods:{
     init(){
         var chart = this.echarts.init(document.getElementById('EC'));
-        console.log(chart,1111);
+        // console.log(chart,1111);
          var option = {
             title: {
                 text: 'ECharts 入门示例'

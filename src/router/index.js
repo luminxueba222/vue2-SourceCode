@@ -41,7 +41,8 @@ export default new Router({
           path: '/table',
           component: resolve => require(['../views/page/BaseTable.vue'], resolve),
           meta: {
-            title: '基础表格'
+            title: '基础表格',
+            keepAlive:true
           }
         },
         {
