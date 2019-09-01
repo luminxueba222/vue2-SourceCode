@@ -1,6 +1,5 @@
 <template>
   <div>
-     {{tagsListArr}}{{this.$store.state.tagsList.length}}
     <x-header></x-header>
     <x-sidebar></x-sidebar>
     <div class="content-box" :class="{collapse:this.$store.state.collapse}">
@@ -32,7 +31,7 @@ export default {
     };
   },
   created(){
-    this.tagsListArr =this.$store.state.tagsList.map(e=>e.name)
+    
   },
   computed:{
      tagsList(){
@@ -40,16 +39,16 @@ export default {
     }
   },
   watch:{
-    tagsList:function(old,newVlu){
-       newVlu.forEach(e=>{
-         if(!this.tagsListArr.includes(e.name)){
+  tagsList(value){
+    this.tagsListArr = []
+        value.forEach(e=>{
+          if(!this.tagsListArr.includes(e.name)){
             this.tagsListArr.push(e.name)
-         }
-        
-       })
-    this.tagsListArr = JSON.parse(JSON.stringify(this.tagsListArr))  
-    }
+          }
+        })
   }
+  } 
+   
 };
 </script>
 <style >

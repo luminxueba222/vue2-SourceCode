@@ -2,21 +2,25 @@
   <div class="header">
     <div class="l">
       <div>
-        <img src="../../assets/img/logo.png" alt />
+        <img src="../../assets/img/logo.png"
+             alt />
       </div>
       <div>
         <span>后台管理系统</span>
       </div>
-      <div class="iconMenu" @click="changeWidth">
+      <div class="iconMenu"
+           @click="changeWidth">
         <i class="el-icon-menu"></i>
       </div>
     </div>
     <div class="r">
       <div>
-        <span>name</span>|
+        <span @click="loginOut"
+              style="cursor: pointer;">name</span>|
       </div>
       <div>
-        <img src="../../assets/img/logo.png" alt />
+        <img src="../../assets/img/logo.png"
+             alt />
       </div>
     </div>
   </div>
@@ -24,8 +28,13 @@
 <script>
 export default {
   methods: {
-    changeWidth() {
+    changeWidth () {
       this.$store.commit("changeCollapse");
+    },
+    loginOut () {
+      this.$router.push({
+        path: '/login'
+      })
     }
   }
 };

@@ -8,7 +8,6 @@
         </span>
       </li>
     </ul>
-    {{tagsList.length}}
     <div class="dropdownBox">
       <el-dropdown @command="handleCommand">
         <el-button size="mini" type="primary">
