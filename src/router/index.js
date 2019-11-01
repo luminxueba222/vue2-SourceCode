@@ -9,7 +9,7 @@ export default new Router({
   routes: [{
       path: '/',
       name: 'home',
-      redirect: '/dashboard'
+      redirect: '/table'
     },
     {
       path: '/',
@@ -18,10 +18,10 @@ export default new Router({
         title: '自述文件'
       },
       children: [{
-          path: '/dashboard',
-          component: resolve => require(['../views/page/Dashboard.vue'], resolve),
+          path: '/table',
+          component: resolve => require(['../views/page/Tabs.vue'], resolve),
           meta: {
-            title: '系统首页'
+            title: '电视剧'
           }
         },
         {
@@ -41,15 +41,15 @@ export default new Router({
           path: '/table',
           component: resolve => require(['../views/page/BaseTable.vue'], resolve),
           meta: {
-            title: '基础表格',
-            keepAlive:true
+            title: '天龙八部',
+            keepAlive: true
           }
         },
         {
           path: '/form',
           component: resolve => require(['../views/page/BaseForm.vue'], resolve),
           meta: {
-            title: '基本表单'
+            title: '天龙八部'
           }
         }, {
           path: '/editor',
@@ -113,7 +113,7 @@ export default new Router({
           path: '/404',
           component: resolve => require(['../views/page/404.vue'], resolve),
           meta: {
-            title: '404'
+            title: '天龙八部'
           }
         },
         {

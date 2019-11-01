@@ -14,6 +14,22 @@ import 'echarts/lib/chart/line'
 Vue.component('chart', ECharts)
 Vue.prototype.echarts = echarts
 Vue.prototype.axios = Axios
+import G6 from '@antv/g6'
+console.log(G6);
+
+Vue.prototype.G6 = G6
+router.beforeEach((to, from, next) => {
+  console.log(to, '222222222299999999999999999999999999');
+
+  if (to.name === '/' && !sessionStorage.getItem('user')) {
+    console.log('jing');
+
+    next('/login')
+    return
+  }
+  next()
+})
+
 Vue.use(Element, {
   size: 'small'
 });
