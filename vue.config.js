@@ -1,10 +1,3 @@
-// const path = require('path')
-let express = require('express')
-let app = express()
-app.get('/api/user',(req,res)=>{
-    res.json({name:"xialinhui"})
-})
-app.listen(3000)
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
     devServer: {
@@ -18,9 +11,9 @@ module.exports = {
                 target: 'http://localhost:3000',
                 ws: true,
                 changeOrigin: true,
-                pathRewrite: {
-                    '^/open': '/open' 
-                }
+                // pathRewrite: {
+                //     '^/api': '/' 
+                // }
             },
             '/foo': {
                 target: '<other_url>'

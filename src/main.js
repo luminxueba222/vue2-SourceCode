@@ -19,11 +19,8 @@ console.log(G6);
 
 Vue.prototype.G6 = G6
 router.beforeEach((to, from, next) => {
-  console.log(to, '222222222299999999999999999999999999');
-
   if (to.name === '/' && !sessionStorage.getItem('user')) {
     console.log('jing');
-
     next('/login')
     return
   }
