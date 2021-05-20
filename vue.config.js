@@ -1,3 +1,4 @@
+console.log(process.env.VUE_APP_ENV,'process.env.VUE_APP_ENV',process.env.NODE_ENV);
 module.exports = {
     publicPath: process.env.NODE_ENV === 'production' ? './' : '/',
     devServer: {
@@ -19,5 +20,13 @@ module.exports = {
                 target: '<other_url>'
             }
         },  // 配置多个代理
+        // css:{
+        //     loaderOptions:{
+        //         sass: {
+        //             data: `@import "@/assets/scss/common.scss";`
+        //         },
+        //     }
+        // }
+       
     }
 }
