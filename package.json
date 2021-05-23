@@ -20,7 +20,7 @@
     "koa": "^2.8.1",
     "koa-router": "^7.4.0",
     "mockjs": "^1.0.1-beta3",
-    "mongoose": "^5.7.1",
+    "mongoose": "^5.7.5",
     "node-sass": "^4.14.1",
     "nodemon": "^1.19.2",
     "sass-loader": "^8.0.2",
