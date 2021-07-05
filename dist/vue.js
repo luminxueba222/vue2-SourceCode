@@ -64,7 +64,6 @@
   }();
 
   function defineReactive(obj, key) {
-    console.log("defineReactive");
     Object.defineProperty(obj, key, {
       get: function get() {
         console.log("getnewVal");

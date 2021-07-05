@@ -10,7 +10,6 @@ class Observer {
   }
 }
 function defineReactive(obj, key) {
-  console.log("defineReactive");
   Object.defineProperty(obj, key, {
     get() {
       console.log("getnewVal");
