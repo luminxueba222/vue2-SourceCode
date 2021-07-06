@@ -42,12 +42,49 @@
     return Constructor;
   }
 
+  var oldArrayProto = Array.prototype;
+  var arrayMethods = Object.create(oldArrayProto);
+  var methods = ["push", "pop", "shift", "unshift", "splice", "sort", "reverse"];
+  methods.forEach(function (method) {
+    arrayMethods[method] = function () {
+      console.log("数组发生变化了"); // const ob = this.__ob__;
+      // const result = oldArrayProto[method].call(this, ...args);
+      // let inserted;
+      // switch (method) {
+      //   case "push":
+      //   case "unshift":
+      //     inserted = args;
+      //     break;
+      //   case "splice":
+      //     inserted = args.slice(2);
+      //     break;
+      // }
+      // if (inserted) ob.observeArray(inserted);
+      // return result;
+    };
+  });
+
   var Observer = /*#__PURE__*/function () {
     function Observer(data) {
       _classCallCheck(this, Observer);
 
-      this.walk(data);
+      //对对象所有的属性进行劫持
+      console.log(this, "this", data);
+      data.__ob = this; // 数组劫持
+
+      if (Array.isArray(data)) {
+        data.__proto__ = arrayMethods; // 如果数组中的是{}需要监控对象的变化
+
+        this.observeArray(data);
+      } else {
+        // 对象劫持
+        this.walk(data);
+      }
     }
+    /**
+     * Observe a obj 对象
+     */
+
 
     _createClass(Observer, [{
       key: "walk",
@@ -55,28 +92,43 @@
         var keys = Object.keys(data);
 
         for (var i = 0; i < keys.length; i++) {
-          defineReactive(data, keys[i]);
+          defineReactive(data, keys[i], data[keys[i]]);
         }
+      }
+      /**
+       * Observe a list Array items 数组
+       */
+
+    }, {
+      key: "observeArray",
+      value: function observeArray(data) {
+        data.forEach(function (item) {
+          observe(item);
+        });
       }
     }]);
 
     return Observer;
   }();
 
-  function defineReactive(obj, key) {
+  function defineReactive(obj, key, value) {
+    // 递归观测对象
+    observe(value);
     Object.defineProperty(obj, key, {
       get: function get() {
-        console.log("getnewVal");
+        console.log("value", "get", value);
+        return value;
       },
       set: function set(newVal) {
-        console.log(newVal, "newVal");
+        // 如果赋值是{}继续观测
+        observe(value);
+        value = newVal;
       }
     });
   }
 
   function observe(data) {
-    console.log(data, "observe");
-    if (_typeof(data) !== "object") return;
+    if (_typeof(data) !== "object" && data !== null) return;
     return new Observer(data);
   }
 
@@ -89,9 +141,31 @@
   }
 
   function initData(vm) {
-    var data = vm.$options.data;
-    data = typeof data === "function" ? data.call(vm) : data;
+    var data = vm.$options.data; // 函数 取返回值
+
+    data = vm._data = typeof data === "function" ? data.call(vm) : data; // 代理  能直接使用vm.数据
+
+    var keys = Object.keys(data);
+    var i = keys.length;
+
+    while (i--) {
+      var key = keys[i];
+      proxy(vm, "_data", key);
+    }
+
     observe(data);
+  } // 当取vm.数据   就去取vm._data数据
+
+
+  function proxy(vm, sourceKey, key) {
+    Object.defineProperty(vm, key, {
+      get: function get() {
+        return vm[sourceKey][key];
+      },
+      set: function set(val) {
+        vm[sourceKey][key] = val;
+      }
+    });
   }
 
   function initMixin(Vue) {

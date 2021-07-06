@@ -16,11 +16,16 @@
         data() {
           return {
             name: "222",
+            age: 10,
+            showObj: {
+              a: 1,
+            },
+            arr: [{ name: "xxx" }, 2, 3],
           };
         },
       });
-      //   vm.data.name = 1;
-      //   console.log(vm, " vm.data");
+      vm.name = 33;
+      vm.arr[0].name;
     </script>
   </body>
 </html>
