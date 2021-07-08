@@ -1,4 +1,4 @@
-import { observe } from "./observe";
+import { observe } from "./observe/index.js";
 
 export function initState(vm) {
   const opts = vm.$options;

@@ -7,7 +7,7 @@
     <title>Document</title>
   </head>
   <body>
-    <div id="#app">{{name}}</div>
+    <div id="app" a="1" b="2">{{name}}</div>
     <script src="./dist/vue.js"></script>
 
     <script>
@@ -15,17 +15,12 @@
         el: "#app",
         data() {
           return {
-            name: "222",
-            age: 10,
-            showObj: {
-              a: 1,
-            },
             arr: [{ name: "xxx" }, 2, 3],
           };
         },
       });
-      vm.name = 33;
-      vm.arr[0].name;
+      // vm.name = 33;
+      console.log(vm);
     </script>
   </body>
 </html>

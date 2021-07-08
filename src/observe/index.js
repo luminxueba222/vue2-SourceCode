@@ -3,8 +3,7 @@ import { arrayMethods } from "./Array";
 class Observer {
   constructor(data) {
     //对对象所有的属性进行劫持
-    console.log(this, "this", data);
-    data.__ob = this;
+    data.__ob__ = this;
     // 数组劫持
     if (Array.isArray(data)) {
       data.__proto__ = arrayMethods;
@@ -28,6 +27,7 @@ class Observer {
    * Observe a list Array items 数组
    */
   observeArray(data) {
+    console.log(data, "observeArray");
     data.forEach((item) => {
       observe(item);
     });
@@ -35,20 +35,23 @@ class Observer {
 }
 function defineReactive(obj, key, value) {
   // 递归观测对象
+  if (key == "__ob__") return;
   observe(value);
   Object.defineProperty(obj, key, {
     get() {
-      console.log("value", "get", value);
+      console.log("defineReactive", value);
       return value;
     },
     set(newVal) {
+      console.log("defineReactive", "set", newVal);
       // 如果赋值是{}继续观测
-      observe(value);
+      observe(newVal);
       value = newVal;
     },
   });
 }
 export function observe(data) {
-  if (typeof data !== "object" && data !== null) return;
+  if (typeof data !== "object") return;
+  if (data.__ob__) return;
   return new Observer(data);
 }

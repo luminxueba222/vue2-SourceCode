@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "serve": "rollup -c -w"
+    "serve": "rollup -c -w",
+    "dev": "rollup -c -w"
   },
   "repository": {
     "type": "git",
