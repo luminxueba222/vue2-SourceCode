@@ -4,6 +4,37 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 }(this, (function () { 'use strict';
 
+  function generate(el) {
+    // 遍历树  拼接成字符窜
+    console.log("el", el);
+    var code = "_c(\"".concat(el.tag, "\"),").concat(el.attrs.length ? genProps(el.attrs) : "undefined");
+    console.log("code", code);
+  }
+
+  function genProps(attrs) {
+    console.log("attrs", attrs);
+    var str = "";
+
+    for (var index = 0; index < attrs.length; index++) {
+      var attr = attrs[index];
+
+      if (attr.name === "style") {
+        (function () {
+          var styleObj = {};
+          attr.value.replace(/([^;:]+)\:([^;:]+)/g, function () {
+            styleObj[arguments[1]] = arguments[2];
+          });
+          console.log("attr", attr);
+          attr.value = styleObj;
+        })();
+      }
+
+      str += "".concat(attr.name, ":").concat(JSON.stringify(attr.value), ",");
+    }
+
+    return "{".concat(str.slice(0, -1), "}");
+  }
+
   //<div id="app">{{name}}</div>
   var ncname = "[a-zA-Z_][\\-\\.0-9_a-zA-Z]*"; //标签名
 
@@ -12,25 +43,88 @@
   var startTagOpen = new RegExp("^<".concat(qnameCapture)); // 匹配开始标签
 
   var startTagClose = /^\s*(\/?)>/;
+  var endTag = new RegExp("^<\\/".concat(qnameCapture, "[^>]*>")); //  </
 
   var attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/; // 属性 id="app"
   // html字符串  解析成dom树
   // vue 是用的正则匹配 (应该逐词解析)
 
-  function compileToFunctions(template) {
-    parseHTML(template);
-  }
+  var root = null; //把解析后的结果组装成树结构
+
+  var stack = []; //利用栈结构组装树结构
+  // 逐词解析   把字符串解析出来
 
   function parseHTML(html) {
     var index = 0;
+
+    function start(tagName, attributes) {
+      var parent = stack[stack.length - 1];
+      var element = createASTElement(tagName, attributes); // console.log("element", element);
+
+      if (!root) {
+        root = element;
+      }
+
+      element.parent = parent;
+
+      if (parent) {
+        parent.children.push(element);
+      }
+
+      stack.push(element); // console.log("tagName, attributes", tagName, attributes);
+    }
+
+    function end(tagName) {
+      // console.log("end  tagName", tagName);
+      var last = stack.pop();
+
+      if (last.tag !== tagName) {
+        throw new Error("标签有误！");
+      }
+    }
+
+    function chars(text) {
+      text = text.replace(/\s/g, "");
+      var parent = stack[stack.length - 1];
+
+      if (text) {
+        parent.children.push({
+          type: 3,
+          text: text
+        });
+      }
+    }
 
     while (html) {
       var textEnd = html.indexOf("<");
 
       if (textEnd === 0) {
         var startTagMatch = parseStartTag();
-        console.log(startTagMatch, "startTagMatch");
-        return;
+
+        if (startTagMatch) {
+          start(startTagMatch.tagName, startTagMatch.attrs);
+          continue;
+        }
+
+        var endTagMatch = html.match(endTag);
+
+        if (endTagMatch) {
+          end(endTagMatch[1]);
+          advance(endTagMatch[0].length);
+        } // return;
+
+      } // 处理文本
+
+
+      var text = void 0; //{{name}}</div>
+
+      if (textEnd >= 0) {
+        text = html.substring(0, textEnd);
+      }
+
+      if (text) {
+        chars(text);
+        advance(text.length);
       }
     }
 
@@ -56,23 +150,39 @@
             name: attr[1],
             value: attr[3] || attr[4] || attr[5] || ""
           });
-        }
+        } // >{{name}}</div>   出掉结尾标签  {{name}}</div>
+
 
         if (_end) {
           advance(_end[0].length);
-        }
+        } // console.log(match, "match");
+        // console.log(html, "html");     >{{name}}</div> html
 
-        console.log(match, "match"); // console.log(html, "html");     >{{name}}</div> html
 
         return match;
       }
     }
 
     function advance(n) {
-      console.log(n, "n");
       index += n;
       html = html.substring(n);
     }
+
+    return root;
+  }
+  function createASTElement(tagName, attrs) {
+    return {
+      type: 1,
+      tag: tagName,
+      attrs: attrs,
+      parent: null,
+      children: []
+    };
+  }
+
+  function compileToFunctions(template) {
+    var root = parseHTML(template);
+    generate(root);
   }
 
   function _typeof(obj) {
