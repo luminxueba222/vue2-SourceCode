@@ -15,6 +15,7 @@ export function initMixin(Vue) {
     const vm = this;
     const options = vm.$options;
     el = document.querySelector(el);
+    vm.$el = el;
     // vue 1 直接替换用正则直接替换 template
     // 把模板转换成渲染函数=>虚拟dom=>diff算法 => 更新虚拟dom=>产生真实节点更新
     if (!options.render) {
@@ -25,7 +26,8 @@ export function initMixin(Vue) {
         options.render = render;
       }
     }
+    //  options.render  渲染函数   渲染成真实dom 替换页面的内容
     console.log("options.render", options.render);
-    mountComponent(vm, el);
+    mountComponent(vm, el); //组件的挂载流程
   };
 }

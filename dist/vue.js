@@ -246,11 +246,27 @@
   // let vm = {arr:[1]}
   // with (vm){console.log(arr)}
 
+  function patch(oldVnode, vnode) {
+    console.log("oldVnode", oldVnode);
+
+    if (oldVnode.nodeType == 1) ;
+  }
+
   function mountComponent(vm, el) {
-    vm._update(vm._render());
+    // 更新函数  数据变化后 会再次调用此函数
+    var updateComponent = function updateComponent() {
+      // 调用render 生成虚拟dom
+      vm._update(vm._render());
+    };
+
+    updateComponent();
   }
   function lifecycleMixin(Vue) {
-    Vue.prototype._update = function (vnode) {};
+    Vue.prototype._update = function (vnode) {
+      var vm = this; // 有初始化 和更新
+
+      patch(vm.$el);
+    };
   }
 
   function _typeof(obj) {
@@ -447,7 +463,8 @@
     Vue.prototype.$mount = function (el) {
       var vm = this;
       var options = vm.$options;
-      el = document.querySelector(el); // vue 1 直接替换用正则直接替换 template
+      el = document.querySelector(el);
+      vm.$el = el; // vue 1 直接替换用正则直接替换 template
       // 把模板转换成渲染函数=>虚拟dom=>diff算法 => 更新虚拟dom=>产生真实节点更新
 
       if (!options.render) {
@@ -458,15 +475,60 @@
           var render = compileToFunctions(template);
           options.render = render;
         }
-      }
+      } //  options.render  渲染函数   渲染成真实dom 替换页面的内容
+
 
       console.log("options.render", options.render);
-      mountComponent(vm);
+      mountComponent(vm); //组件的挂载流程
+    };
+  }
+
+  function createElement(vm, tag) {
+    var data = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    for (var _len = arguments.length, children = new Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+      children[_key - 3] = arguments[_key];
+    }
+
+    return vnode(vm, tag, data, data.key, children, undefined);
+  }
+  function createTxetElement(vm, text) {
+    return vnode(vm, undefined, undefined, undefined, undefined, text);
+  }
+  function vnode(vm, tag, data, key, children, text) {
+    //虚拟节点：就是一个对象用来描述dom 结构  可以新增自定义的属性
+    return {
+      vm: vm,
+      tag: tag,
+      data: data,
+      key: key,
+      children: children,
+      text: text
     };
   }
 
   function renderMixin(Vue) {
-    Vue.prototype._render = function (vnode) {};
+    Vue.prototype._render = function () {
+      var vm = this;
+      var render = vm.$options.render;
+      var vnode = render.call(vm);
+      return vnode;
+    };
+
+    Vue.prototype._c = function () {
+      //createElement
+      return createElement.apply(void 0, [this].concat(Array.prototype.slice.call(arguments)));
+    };
+
+    Vue.prototype._v = function (text) {
+      //createTxetElement
+      return createTxetElement.apply(void 0, [this].concat(Array.prototype.slice.call(arguments)));
+    };
+
+    Vue.prototype._s = function (val) {
+      if (_typeof(val) == "object") return JSON.stringify(val);
+      return val;
+    };
   }
 
   function Vue(options) {
