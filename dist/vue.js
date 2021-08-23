@@ -4,15 +4,64 @@
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 }(this, (function () { 'use strict';
 
+  var defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g; //{{name}}
+
   function generate(el) {
-    // 遍历树  拼接成字符窜
-    console.log("el", el);
-    var code = "_c(\"".concat(el.tag, "\"),").concat(el.attrs.length ? genProps(el.attrs) : "undefined");
-    console.log("code", code);
+    var children = genChildren(el); // 遍历树  拼接成字符窜
+
+    var code = "_c(\"".concat(el.tag, "\",").concat(el.attrs.length ? genProps(el.attrs) : "undefined").concat(children ? ",".concat(children) : "", ")"); //_c('div'),{id:"app",a:"1",b:"2",style:{"margin":" 0px"," color":" #000"}},_v("word"+_s(arr)+"hello"))
+
+    return code;
+  }
+
+  function genChildren(el) {
+    var children = el.children; //获取儿子
+
+    if (children) {
+      return children.map(function (c) {
+        return gen(c);
+      }).join(",");
+    }
+
+    return false;
+  }
+
+  function gen(el) {
+    if (el.type === 1) {
+      return generate(el);
+    } else {
+      var text = el.text;
+
+      if (!defaultTagRE.test(text)) {
+        return "_v('".concat(text, "')"); //_v()文本
+      } else {
+        var tokens = [];
+        var match;
+        var lastIndex = defaultTagRE.lastIndex = 0;
+
+        while (match = defaultTagRE.exec(text)) {
+          var index = match.index; //开始索引
+
+          if (index > lastIndex) {
+            tokens.push(JSON.stringify(text.slice(lastIndex, index)));
+          } // tokens.push(JSON.stringify(match[1].trim()));  _s()  原理JSON.stringify()
+
+
+          tokens.push("_s(".concat(match[1].trim(), ")"));
+          lastIndex = index + match[0].length;
+        }
+
+        if (lastIndex < text.length) {
+          tokens.push(JSON.stringify(text.slice(lastIndex)));
+        }
+
+        return "_v(".concat(tokens.join("+"), ")");
+      }
+    }
   }
 
   function genProps(attrs) {
-    console.log("attrs", attrs);
+    //  [{name: "id", value: "app"},{name: "a", value: "1"}]
     var str = "";
 
     for (var index = 0; index < attrs.length; index++) {
@@ -24,7 +73,6 @@
           attr.value.replace(/([^;:]+)\:([^;:]+)/g, function () {
             styleObj[arguments[1]] = arguments[2];
           });
-          console.log("attr", attr);
           attr.value = styleObj;
         })();
       }
@@ -181,8 +229,28 @@
   }
 
   function compileToFunctions(template) {
-    var root = parseHTML(template);
-    generate(root);
+    //  将html词法解析(开始标签  属性  文本)  => ast语法树 用来描述HTML语法的 (利用 stack=[])=>codegen  (_c('div'),{id:"app",a:"1",b:"2",style:{"margin":" 0px"," color":" #000"}})=>让字符串执行(字符串转换为代码)
+    // =>render 函数 (with+new Function)=>虚拟Dom(增加额外的属性)=>生成真实的Dom
+    // 字符串转换为代码  eval  消耗性能  会有作用域的问题
+    var root = parseHTML(template); // {type: 1, tag: "div", attrs: Array(4), parent: undefined, children: Array(1)}  AST语法树
+
+    var code = generate(root); // _c('div'),{id:"app",a:"1",b:"2",style:{"margin":" 0px"," color":" #000"}},_c('ul'),undefined,_c('li'),undefined,_v('li111')),_c('li'),undefined,_v('li2222'))),_v("word"+_s(arr)+"hello"))
+
+    var render = new Function("with(this){return ".concat(code, "}")); // function anonymous(
+    //   ) {
+    //   with(this){return _c("div",{id:"app",a:"1",b:"2",style:{"margin":" 0px"," color":" #000"}},_v("word"+_s(arr)+"hello"))}
+    //   }
+
+    return render;
+  } // with
+  // let vm = {arr:[1]}
+  // with (vm){console.log(arr)}
+
+  function mountComponent(vm, el) {
+    vm._update(vm._render());
+  }
+  function lifecycleMixin(Vue) {
+    Vue.prototype._update = function (vnode) {};
   }
 
   function _typeof(obj) {
@@ -387,10 +455,18 @@
 
         if (!template && el) {
           template = el.outerHTML;
-          compileToFunctions(template);
+          var render = compileToFunctions(template);
+          options.render = render;
         }
       }
+
+      console.log("options.render", options.render);
+      mountComponent(vm);
     };
+  }
+
+  function renderMixin(Vue) {
+    Vue.prototype._render = function (vnode) {};
   }
 
   function Vue(options) {
@@ -398,6 +474,9 @@
   }
 
   initMixin(Vue);
+  lifecycleMixin(Vue); // _update
+
+  renderMixin(Vue); // _render
 
   return Vue;
 

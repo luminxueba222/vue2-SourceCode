@@ -1,4 +1,5 @@
 import { compileToFunctions } from "./compiler/index.js";
+import { mountComponent } from "./lifecycle.js";
 import { initState } from "./state";
 
 export function initMixin(Vue) {
@@ -20,8 +21,11 @@ export function initMixin(Vue) {
       let template = options.template;
       if (!template && el) {
         template = el.outerHTML;
-        compileToFunctions(template);
+        let render = compileToFunctions(template);
+        options.render = render;
       }
     }
+    console.log("options.render", options.render);
+    mountComponent(vm, el);
   };
 }
