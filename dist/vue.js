@@ -1,6 +1,6 @@
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
+  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory(require('.')) :
+  typeof define === 'function' && define.amd ? define(['.'], factory) :
   (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.Vue = factory());
 }(this, (function () { 'use strict';
 
@@ -246,29 +246,6 @@
   // let vm = {arr:[1]}
   // with (vm){console.log(arr)}
 
-  function patch(oldVnode, vnode) {
-    console.log("oldVnode", oldVnode);
-
-    if (oldVnode.nodeType == 1) ;
-  }
-
-  function mountComponent(vm, el) {
-    // 更新函数  数据变化后 会再次调用此函数
-    var updateComponent = function updateComponent() {
-      // 调用render 生成虚拟dom
-      vm._update(vm._render());
-    };
-
-    updateComponent();
-  }
-  function lifecycleMixin(Vue) {
-    Vue.prototype._update = function (vnode) {
-      var vm = this; // 有初始化 和更新
-
-      patch(vm.$el);
-    };
-  }
-
   function _typeof(obj) {
     "@babel/helpers - typeof";
 
@@ -305,6 +282,154 @@
     if (protoProps) _defineProperties(Constructor.prototype, protoProps);
     if (staticProps) _defineProperties(Constructor, staticProps);
     return Constructor;
+  }
+
+  var id$1 = 0;
+
+  var Dep = /*#__PURE__*/function () {
+    //每个属性都分配一个dep dep可以存放watcher   watcher中还要存放dep
+    function Dep() {
+      _classCallCheck(this, Dep);
+
+      this.id = id$1++;
+      this.subs = []; //用来存放watcher
+    }
+
+    _createClass(Dep, [{
+      key: "depend",
+      value: function depend() {
+        //Dep.target dep里要存放这个watcher watcher要存放dep  多对多的关系
+        if (Dep.target) {
+          Dep.target.addDep(this);
+        }
+      }
+    }, {
+      key: "addSub",
+      value: function addSub(watcher) {
+        this.subs.push(watcher);
+      }
+    }, {
+      key: "notify",
+      value: function notify() {
+        this.subs.forEach(function (watcher) {
+          return watcher.update();
+        });
+      }
+    }]);
+
+    return Dep;
+  }();
+
+  Dep.target = null;
+  function pushTarget(watcher) {
+    Dep.target = watcher;
+  }
+  function popTarget() {
+    Dep.target = null;
+  }
+
+  var id = 0;
+
+  var Watcher = /*#__PURE__*/function () {
+    function Watcher(vm, exprOrFn, cd, options) {
+      _classCallCheck(this, Watcher);
+
+      this.vm = vm;
+      this.exprOrFn = exprOrFn;
+      this.cd = cd;
+      this.options = options; //默认应该执行exprOrFn    exprOrFn  调用render 生成虚拟dom
+
+      this.getter = exprOrFn;
+      this.deps = [];
+      this.depsId = new Set();
+      this.id = id++;
+      this.get();
+    }
+
+    _createClass(Watcher, [{
+      key: "get",
+      value: function get() {
+        //稍后用户更新时可以重新调用getter方法
+        //defineProperty.get  执行
+        pushTarget(this);
+        this.getter();
+        popTarget();
+      }
+    }, {
+      key: "addDep",
+      value: function addDep(dep) {
+        var id = dep.id;
+
+        if (!this.depsId.has(id)) {
+          this.depsId.add(id);
+          this.deps.push(dep);
+          dep.addSub(this);
+        }
+      }
+    }, {
+      key: "update",
+      value: function update() {
+        this.get();
+      }
+    }]);
+
+    return Watcher;
+  }();
+
+  function patch(oldVnode, vnode) {
+    if (oldVnode.nodeType == 1) {
+      //元素
+      //用vnode  来生成真实dom 替换原来的dom元素  insertBefore
+      var parentEle = oldVnode.parentNode;
+      var elm = createElm(vnode); //根据虚拟节点创建元素
+
+      parentEle.insertBefore(elm, oldVnode.nextSibling);
+      parentEle.removeChild(oldVnode);
+      return elm;
+    }
+  }
+
+  function createElm(vnode) {
+    var tag = vnode.tag;
+        vnode.data;
+        var children = vnode.children,
+        text = vnode.text;
+        vnode.vm;
+
+    if (typeof tag === "string") {
+      //元素
+      vnode.el = document.createElement(tag); //虚拟节点会有一个el属性  对应真实的节点
+
+      children.forEach(function (child) {
+        vnode.el.appendChild(createElm(child));
+      });
+    } else {
+      //文本
+      vnode.el = document.createTextNode(text);
+    }
+
+    return vnode.el;
+  }
+
+  function mountComponent(vm, el) {
+    // 更新函数  数据变化后 会再次调用此函数
+    var updateComponent = function updateComponent() {
+      // 调用render 生成虚拟dom
+      vm._update(vm._render());
+    }; //观察者模式   属性是 被观察者   刷新页面  是观察者
+    // updateComponent();
+
+
+    new Watcher(vm, updateComponent, function () {
+      console.log("更新视图了");
+    }, true); //它是一个渲染watcher  后续还有其它的watcher
+  }
+  function lifecycleMixin(Vue) {
+    Vue.prototype._update = function (vnode) {
+      var vm = this; // 有初始化 和更新
+
+      vm.$el = patch(vm.$el, vnode);
+    };
   }
 
   var oldArrayProto = Array.prototype;
@@ -379,7 +504,6 @@
     }, {
       key: "observeArray",
       value: function observeArray(data) {
-        console.log(data, "observeArray");
         data.forEach(function (item) {
           observe(item);
         });
@@ -393,16 +517,26 @@
     // 递归观测对象
     if (key == "__ob__") return;
     observe(value);
+    var dep = new Dep(); //每个属性都有一个dep属性
+
     Object.defineProperty(obj, key, {
       get: function get() {
-        console.log("defineReactive", value);
+        //取值时我希望watcher和dep的对应起来
+        if (Dep.target) {
+          //此值是在模板中取的
+          dep.depend();
+        }
+
+        console.log(key, "key", dep);
         return value;
       },
       set: function set(newVal) {
-        console.log("defineReactive", "set", newVal); // 如果赋值是{}继续观测
-
-        observe(newVal);
-        value = newVal;
+        // 如果赋值是{}继续观测
+        if (newVal !== value) {
+          dep.notify();
+          observe(newVal);
+          value = newVal;
+        }
       }
     });
   }
@@ -478,7 +612,6 @@
       } //  options.render  渲染函数   渲染成真实dom 替换页面的内容
 
 
-      console.log("options.render", options.render);
       mountComponent(vm); //组件的挂载流程
     };
   }

@@ -27,7 +27,6 @@ export function initMixin(Vue) {
       }
     }
     //  options.render  渲染函数   渲染成真实dom 替换页面的内容
-    console.log("options.render", options.render);
     mountComponent(vm, el); //组件的挂载流程
   };
 }

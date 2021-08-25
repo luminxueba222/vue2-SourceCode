@@ -1,4 +1,5 @@
 import { arrayMethods } from "./Array";
+import Dep from "./dep";
 
 class Observer {
   constructor(data) {
@@ -27,7 +28,6 @@ class Observer {
    * Observe a list Array items 数组
    */
   observeArray(data) {
-    console.log(data, "observeArray");
     data.forEach((item) => {
       observe(item);
     });
@@ -37,16 +37,24 @@ function defineReactive(obj, key, value) {
   // 递归观测对象
   if (key == "__ob__") return;
   observe(value);
+  let dep = new Dep(); //每个属性都有一个dep属性
   Object.defineProperty(obj, key, {
     get() {
-      console.log("defineReactive", value);
+      //取值时我希望watcher和dep的对应起来
+      if (Dep.target) {
+        //此值是在模板中取的
+        dep.depend();
+      }
+      console.log(key, "key", dep);
       return value;
     },
     set(newVal) {
-      console.log("defineReactive", "set", newVal);
       // 如果赋值是{}继续观测
-      observe(newVal);
-      value = newVal;
+      if (newVal !== value) {
+        dep.notify();
+        observe(newVal);
+        value = newVal;
+      }
     },
   });
 }
