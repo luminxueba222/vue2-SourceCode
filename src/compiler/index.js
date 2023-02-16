@@ -10,6 +10,9 @@ export function compileToFunctions(template) {
   // {type: 1, tag: "div", attrs: Array(4), parent: undefined, children: Array(1)}  AST语法树
   let code = generate(root);
   // _c('div'),{id:"app",a:"1",b:"2",style:{"margin":" 0px"," color":" #000"}},_c('ul'),undefined,_c('li'),undefined,_v('li111')),_c('li'),undefined,_v('li2222'))),_v("word"+_s(arr)+"hello"))
+
+
+  //模版引擎的实现原理    with + new Function()
   let render = new Function(`with(this){return ${code}}`);
   // function anonymous(
   //   ) {

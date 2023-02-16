@@ -1,3 +1,9 @@
+
+
+
+// _c() 创建元素  
+// _v() 文本
+// _s()  原理JSON.stringify()
 const defaultTagRE = /\{\{((?:.|\r?\n)+?)\}\}/g; //{{name}}
 export function generate(el) {
   let children = genChildren(el);

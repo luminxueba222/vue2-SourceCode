@@ -1,4 +1,4 @@
-import { vnode } from ".";
+
 
 export function patch(oldVnode, vnode) {
   if (oldVnode.nodeType == 1) {

@@ -4,7 +4,12 @@ import { patch } from "./vdom/patch";
 export function mountComponent(vm, el) {
   // 更新函数  数据变化后 会再次调用此函数
   let updateComponent = () => {
-    // 调用render 生成虚拟dom
+    // 1.调用render 生成虚拟dom  vm._render(）
+
+    // 2.虚拟dom生成真实dom       vm._update(）
+
+
+    //3.插入el中
     vm._update(vm._render());
   };
   //观察者模式   属性是 被观察者   刷新页面  是观察者

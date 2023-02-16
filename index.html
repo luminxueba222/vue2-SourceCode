@@ -10,28 +10,27 @@
     <div id="app" a="1" b="2" style="margin: 0px; background: #000">
       {{arr}} word {{arr}} hello{{age}}
     </div>
-    <!-- <ul>
-      <li>li111</li>
-      <li>li2222</li>
-    </ul> -->
     <script src="./dist/vue.js"></script>
 
     <script>
       let vm = new Vue({
         el: "#app",
+        // template:'<div>11111</div>',
         data() {
           return {
             age: "11",
-            arr: [2, 3],
+            arr: [1, 3],
           };
         },
       });
-      // vm.name = 33;
-
       setTimeout(() => {
-        vm.age = "22222222";
+        vm.age = "111";
         vm._update(vm._render());
       });
+      // vue  1.0使用的是模版引擎 用正则替换 当数据改变去修改模版
+      // vue  2.0虚拟DOM  把模版变成JS语法生成虚拟DOM
     </script>
+
+    
   </body>
 </html>

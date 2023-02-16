@@ -78,7 +78,7 @@ export function parseHTML(html) {
     // console.log(start, "html");    (2) ["<div", "div", index: 0, input: "<div id=\"app\">{{name}}</div>", groups: undefined]0: "<div"1: "div"groups: undefinedindex: 0input: "<div id=\"app\">{{name}}</div>"length: 2__proto__: Array(0) "html"
     if (start) {
       const match = {
-        tagName: start[1],
+        tagName: start[1],//标签名
         attrs: [],
         start: index,
       };

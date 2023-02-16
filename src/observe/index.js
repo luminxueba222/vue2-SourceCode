@@ -59,6 +59,8 @@ function defineReactive(obj, key, value) {
   });
 }
 export function observe(data) {
+  // 只对对象劫持
+  
   if (typeof data !== "object") return;
   if (data.__ob__) return;
   return new Observer(data);
